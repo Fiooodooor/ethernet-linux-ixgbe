@@ -39,6 +39,8 @@ extern int run_oal_netdev_tdd_tests(void);
 extern int run_oal_interrupt_tdd_tests(void);
 extern int run_oal_sync_tdd_tests(void);
 extern int run_oal_time_tdd_tests(void);
+extern int run_ixgbe_hw_feature_tdd_tests(void);
+extern int run_ixgbe_lifecycle_tdd_tests(void);
 
 /* Test suite information structure */
 typedef struct {
@@ -99,6 +101,22 @@ static oal_test_suite_t oal_master_test_suites[] = {
         .enabled = true,
         .expected_failures = 17,  /* All should fail until implemented */
         .porting_focus = "Linux jiffies/HZ → FreeBSD ticks/hz + callout framework"
+    },
+    {
+        .name = "IXGBE_HW_FEATURES",
+        .description = "IXGBE Hardware Feature Abstraction",
+        .test_runner = run_ixgbe_hw_feature_tdd_tests,
+        .enabled = true,
+        .expected_failures = 18,  /* All should fail until implemented */
+        .porting_focus = "IXGBE flow control, VLAN, RSS, link management features"
+    },
+    {
+        .name = "IXGBE_LIFECYCLE",
+        .description = "IXGBE Driver Lifecycle and Error Handling",
+        .test_runner = run_ixgbe_lifecycle_tdd_tests,
+        .enabled = true,
+        .expected_failures = 18,  /* All should fail until implemented */
+        .porting_focus = "Driver probe/attach/detach, error handling, resource management"
     }
 };
 
@@ -295,6 +313,8 @@ static void print_final_results(const oal_test_results_t *results)
     printf("   d) Synchronization (locking primitives)\n");
     printf("   e) Network Device (interface abstraction)\n");
     printf("   f) Time Management (timers and delays)\n");
+    printf("   g) IXGBE Hardware Features (device-specific)\n");
+    printf("   h) IXGBE Driver Lifecycle (driver management)\n");
     printf("\n");
     printf("4. 🎯 Success Criteria for Implementation:\n");
     printf("   → All %d tests should PASS after implementation\n", results->total_tests);

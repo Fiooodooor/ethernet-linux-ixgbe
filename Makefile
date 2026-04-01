@@ -50,6 +50,8 @@ TEST_EXECUTABLES := \
     $(BUILD_DIR)/test_oal_interrupt_tdd \
     $(BUILD_DIR)/test_oal_sync_tdd \
     $(BUILD_DIR)/test_oal_time_tdd \
+    $(BUILD_DIR)/test_ixgbe_hw_features_tdd \
+    $(BUILD_DIR)/test_ixgbe_lifecycle_tdd \
     $(BUILD_DIR)/oal_master_tdd_runner
 
 # Object files
@@ -59,6 +61,8 @@ NETDEV_OBJ := $(BUILD_DIR)/test_oal_netdev_tdd.o
 INTERRUPT_OBJ := $(BUILD_DIR)/test_oal_interrupt_tdd.o
 SYNC_OBJ := $(BUILD_DIR)/test_oal_sync_tdd.o
 TIME_OBJ := $(BUILD_DIR)/test_oal_time_tdd.o
+HW_FEATURES_OBJ := $(BUILD_DIR)/test_ixgbe_hw_features_tdd.o
+LIFECYCLE_OBJ := $(BUILD_DIR)/test_ixgbe_lifecycle_tdd.o
 MASTER_OBJ := $(BUILD_DIR)/oal_master_tdd_runner.o
 
 # Default target
@@ -138,7 +142,17 @@ $(BUILD_DIR)/test_oal_time_tdd: $(TIME_OBJ)
 	$(CC) -o $@ $< $(LDFLAGS)
 	@echo "✓ Built: $@"
 
-$(BUILD_DIR)/oal_master_tdd_runner: $(MASTER_OBJ) $(MEMORY_OBJ) $(REGISTER_OBJ) $(NETDEV_OBJ) $(INTERRUPT_OBJ) $(SYNC_OBJ) $(TIME_OBJ)
+$(BUILD_DIR)/test_ixgbe_hw_features_tdd: $(HW_FEATURES_OBJ)
+	@echo "Linking IXGBE hardware features TDD tests..."
+	$(CC) -o $@ $< $(LDFLAGS)
+	@echo "✓ Built: $@"
+
+$(BUILD_DIR)/test_ixgbe_lifecycle_tdd: $(LIFECYCLE_OBJ)
+	@echo "Linking IXGBE lifecycle TDD tests..."
+	$(CC) -o $@ $< $(LDFLAGS)
+	@echo "✓ Built: $@"
+
+$(BUILD_DIR)/oal_master_tdd_runner: $(MASTER_OBJ) $(MEMORY_OBJ) $(REGISTER_OBJ) $(NETDEV_OBJ) $(INTERRUPT_OBJ) $(SYNC_OBJ) $(TIME_OBJ) $(HW_FEATURES_OBJ) $(LIFECYCLE_OBJ)
 	@echo "Linking master TDD test runner..."
 	$(CC) -o $@ $^ $(LDFLAGS)
 	@echo "✓ Built: $@"
@@ -167,6 +181,14 @@ $(BUILD_DIR)/test_oal_sync_tdd.o: $(TEST_DIR)/test_oal_sync_tdd.c
 $(BUILD_DIR)/test_oal_time_tdd.o: $(TEST_DIR)/test_oal_time_tdd.c
 	@echo "Compiling time TDD tests..."
 	$(CC) $(CFLAGS) $(INCLUDES) -DOAL_TIME_TDD_TEST_MAIN -c -o $@ $<
+
+$(BUILD_DIR)/test_ixgbe_hw_features_tdd.o: $(TEST_DIR)/test_ixgbe_hw_features_tdd.c
+	@echo "Compiling IXGBE hardware features TDD tests..."
+	$(CC) $(CFLAGS) $(INCLUDES) -DIXGBE_HW_FEATURE_TDD_TEST_MAIN -c -o $@ $<
+
+$(BUILD_DIR)/test_ixgbe_lifecycle_tdd.o: $(TEST_DIR)/test_ixgbe_lifecycle_tdd.c
+	@echo "Compiling IXGBE lifecycle TDD tests..."
+	$(CC) $(CFLAGS) $(INCLUDES) -DIXGBE_LIFECYCLE_TDD_TEST_MAIN -c -o $@ $<
 
 $(BUILD_DIR)/oal_master_tdd_runner.o: $(TEST_DIR)/oal_master_tdd_runner.c
 	@echo "Compiling master TDD runner..."
@@ -212,6 +234,16 @@ test-sync: $(BUILD_DIR)/test_oal_sync_tdd
 test-time: $(BUILD_DIR)/test_oal_time_tdd
 	@echo "Running time management TDD tests..."
 	./$(BUILD_DIR)/test_oal_time_tdd
+
+.PHONY: test-ixgbe-features
+test-ixgbe-features: $(BUILD_DIR)/test_ixgbe_hw_features_tdd
+	@echo "Running IXGBE hardware features TDD tests..."
+	./$(BUILD_DIR)/test_ixgbe_hw_features_tdd
+
+.PHONY: test-ixgbe-lifecycle
+test-ixgbe-lifecycle: $(BUILD_DIR)/test_ixgbe_lifecycle_tdd
+	@echo "Running IXGBE lifecycle TDD tests..."
+	./$(BUILD_DIR)/test_ixgbe_lifecycle_tdd
 
 # Test suite selection
 .PHONY: test-suite
