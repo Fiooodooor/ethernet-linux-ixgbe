@@ -1,0 +1,8 @@
+🚨 CRITICAL FRAMEWORK CONTAMINATION DETECTED 🚨
+
+Date: 2026-04-01 17:36:48 UTC
+Actual Usage Violations: 2
+Agents Affected: 1
+
+ACTUAL framework API usage detected (not just documentation).
+See /root/.clawteam/workspaces/nic-port-v2-rerun7/risk-auditor/contamination_monitor.log for details.

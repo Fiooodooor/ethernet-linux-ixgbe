@@ -1,0 +1,115 @@
+[2026-04-01 17:36:09 UTC] CONTAMINATION MONITOR START
+=== FORBIDDEN FRAMEWORK SCAN ===
+Scanning api-mapper...
+🚨 api-mapper: 3 FRAMEWORK VIOLATIONS DETECTED!
+  - iflib: 1 files
+  - linuxkpi: 1 files
+  - rte_: 0 files
+  - DPDK: 1 files
+    CONTAMINATED FILE: ./freebsd/src/ixgbe_oal.h
+Scanning code-reviewer...
+✅ code-reviewer: CLEAN
+Scanning coder...
+✅ coder: CLEAN
+Scanning kpi-auditor...
+✅ kpi-auditor: CLEAN
+Scanning linux-analyst...
+✅ linux-analyst: CLEAN
+Scanning merge-strategist...
+✅ merge-strategist: CLEAN
+Scanning native-validator...
+✅ native-validator: CLEAN
+Scanning os-extension-validator...
+✅ os-extension-validator: CLEAN
+Scanning performance-engineer...
+🚨 performance-engineer: 6 FRAMEWORK VIOLATIONS DETECTED!
+  - iflib: 2 files
+  - linuxkpi: 2 files
+  - rte_: 0 files
+  - DPDK: 2 files
+    CONTAMINATED FILE: ./performance_framework.h
+    CONTAMINATED FILE: ./performance_framework.c
+Scanning portability-validator...
+✅ portability-validator: CLEAN
+Scanning risk-auditor...
+✅ risk-auditor: CLEAN
+Scanning seam-architect...
+✅ seam-architect: CLEAN
+Scanning tdd-writer...
+🚨 tdd-writer: 8 FRAMEWORK VIOLATIONS DETECTED!
+  - iflib: 2 files
+  - linuxkpi: 2 files
+  - rte_: 2 files
+  - DPDK: 2 files
+    CONTAMINATED FILE: ./tests/oal_tdd_tests/test_oal_memory_tdd.c
+    CONTAMINATED FILE: ./tests/oal_tdd_tests/test_oal_register_tdd.c
+Scanning verification-executor...
+✅ verification-executor: CLEAN
+
+=== CONTAMINATION SUMMARY ===
+Total framework violations: 17
+Agents with violations: 3
+
+🚨🚨🚨 CRITICAL CONTAMINATION ALERT 🚨🚨🚨
+NON-NEGOTIABLE RULE VIOLATION DETECTED!
+IMMEDIATE ACTION REQUIRED!
+
+
+=== OAL SEAM COMPLIANCE CHECK ===
+✅ api-mapper: OAL seam implementation detected (2 OAL files, 4 files with OS ifdefs)
+✅ code-reviewer: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ coder: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ kpi-auditor: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ linux-analyst: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ merge-strategist: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ native-validator: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ os-extension-validator: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ performance-engineer: OAL seam implementation detected (0 OAL files, 5 files with OS ifdefs)
+✅ portability-validator: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ risk-auditor: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ seam-architect: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+✅ tdd-writer: OAL seam implementation detected (3 OAL files, 4 files with OS ifdefs)
+✅ verification-executor: OAL seam implementation detected (0 OAL files, 4 files with OS ifdefs)
+OAL seam implementations: 14 agents
+[2026-04-01 17:36:09 UTC] CONTAMINATION MONITOR END
+---
+[2026-04-01 17:36:48 UTC] IMPROVED CONTAMINATION MONITOR START
+=== CONTEXT-AWARE FRAMEWORK SCAN ===
+Scanning api-mapper...
+📝 api-mapper: CLEAN (docs mention frameworks in policy/comments)
+Scanning code-reviewer...
+✅ code-reviewer: CLEAN
+Scanning coder...
+✅ coder: CLEAN
+Scanning kpi-auditor...
+✅ kpi-auditor: CLEAN
+Scanning linux-analyst...
+✅ linux-analyst: CLEAN
+Scanning merge-strategist...
+✅ merge-strategist: CLEAN
+Scanning native-validator...
+✅ native-validator: CLEAN
+Scanning os-extension-validator...
+✅ os-extension-validator: CLEAN
+Scanning performance-engineer...
+📝 performance-engineer: CLEAN (docs mention frameworks in policy/comments)
+Scanning portability-validator...
+✅ portability-validator: CLEAN
+Scanning risk-auditor...
+✅ risk-auditor: CLEAN
+Scanning seam-architect...
+✅ seam-architect: CLEAN
+Scanning tdd-writer...
+🚨 tdd-writer: 2 ACTUAL FRAMEWORK USAGE DETECTED!
+Violations:
+./tests/oal_tdd_tests/test_oal_memory_tdd.c:    /* - Scan for iflib_* calls */
+./tests/oal_tdd_tests/test_oal_register_tdd.c:    /* - Scan for iflib_* calls */
+Scanning verification-executor...
+✅ verification-executor: CLEAN
+
+=== IMPROVED CONTAMINATION SUMMARY ===
+Actual framework usage violations: 2
+Agents with actual violations: 1
+🚨🚨🚨 CRITICAL CONTAMINATION ALERT 🚨🚨🚨
+ACTUAL FRAMEWORK USAGE DETECTED!
+IMMEDIATE ACTION REQUIRED!

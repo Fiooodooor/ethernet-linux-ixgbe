@@ -1,0 +1,53 @@
+=== FRAMEWORK CONTAMINATION SCAN ===
+Scan Date: Wed Apr  1 17:33:30 CEST 2026
+
+=== Checking for forbidden framework usage ===
+No direct framework calls found
+=== EXTENDED CONTAMINATION ANALYSIS ===
+
+Linux-specific kernel APIs detected:
+400
+
+Checking for kernel compatibility layers:
+src/kcompat-generator.sh
+src/kcompat-lib.sh
+src/kcompat.c
+src/kcompat.h
+src/kcompat_cleanup.h
+src/kcompat_defs.h
+src/kcompat_gcc.h
+src/kcompat_impl.h
+src/kcompat_kthread.h
+src/kcompat_overflow.h
+src/kcompat_packing.c
+src/kcompat_packing.h
+src/kcompat_pldmfw.c
+src/kcompat_pldmfw.h
+src/kcompat_rhel_defs.h
+src/kcompat_sles_defs.h
+src/kcompat_std_defs.h
+src/kcompat_ubuntu_defs.h
+src/kcompat_xarray.c
+src/kcompat_xarray.h
+
+Size of compatibility code:
+36K	src/kcompat-generator.sh
+16K	src/kcompat-lib.sh
+76K	src/kcompat.c
+212K	src/kcompat.h
+12K	src/kcompat_cleanup.h
+4.0K	src/kcompat_defs.h
+4.0K	src/kcompat_gcc.h
+112K	src/kcompat_impl.h
+4.0K	src/kcompat_kthread.h
+20K	src/kcompat_overflow.h
+20K	src/kcompat_packing.c
+20K	src/kcompat_packing.h
+36K	src/kcompat_pldmfw.c
+8.0K	src/kcompat_pldmfw.h
+8.0K	src/kcompat_rhel_defs.h
+8.0K	src/kcompat_sles_defs.h
+8.0K	src/kcompat_std_defs.h
+4.0K	src/kcompat_ubuntu_defs.h
+64K	src/kcompat_xarray.c
+60K	src/kcompat_xarray.h
