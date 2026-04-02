@@ -5,7 +5,7 @@
  * TDD tests for OAL network device abstraction seams
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 
 /* These includes will FAIL until OAL netdev header is implemented */
@@ -206,6 +207,10 @@ static bool test_oal_netdev_register_basic(void)
     };
     
     int result = -1;
+
+    /* Suppress unused variable warnings for TDD */
+    (void)mock_netdev;
+    (void)result;
     
     /* This call should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_netdev_register() not implemented\n");
@@ -279,6 +284,9 @@ static bool test_oal_netif_carrier_state_transitions(void)
         .carrier_on = false,
         .magic = 0x4F414C4E
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)mock_netdev;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_netif_carrier_on/off() not implemented\n");
@@ -357,6 +365,10 @@ static bool test_oal_netdev_tx_queue_management(void)
         tx_queues[i].head = 0;
         tx_queues[i].tail = 0;
     }
+
+    /* Suppress unused variable warnings for TDD */
+    (void)mock_netdev;
+    (void)tx_queues;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: TX queue management not implemented\n");
@@ -447,6 +459,10 @@ static bool test_oal_netdev_statistics_basic(void)
     };
     
     struct mock_oal_netdev_stats stats = {0};
+
+    /* Suppress unused variable warnings for TDD */
+    (void)mock_netdev;
+    (void)stats;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_netdev_get_stats() not implemented\n");

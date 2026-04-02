@@ -5,7 +5,7 @@
  * TDD tests for OAL time management and timer abstraction seams
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <limits.h>
 #include <time.h>
 
 /* These includes will FAIL until OAL time header is implemented */
@@ -71,8 +73,9 @@ struct mock_oal_delay_context {
 
 /* Expected OAL constants (these should FAIL until implemented) */
 #ifndef OAL_JIFFIES
-#define OAL_JIFFIES                 oal_get_jiffies()
-#define OAL_HZ                      oal_get_hz()
+/* TDD stubs: use 0 until oal_get_jiffies()/oal_get_hz() are implemented */
+#define OAL_JIFFIES                 ((uint64_t)0)
+#define OAL_HZ                      ((uint32_t)0)
 #define OAL_MAX_JIFFY_OFFSET        (LONG_MAX >> 1)
 #endif
 
@@ -127,6 +130,9 @@ static bool test_oal_time_jiffies_basic(void)
         .time_read_count = 0,
         .magic = 0x4F414C54  /* "OALT" */
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)time_ctx;
     
     uint64_t jiffies1 = 0;
     uint64_t jiffies2 = 0;
@@ -281,8 +287,11 @@ static bool test_oal_timer_init_basic(void)
         .trigger_count = 0,
         .magic = 0x4F414C54
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_timer;
     
-    /* This call should FAIL until implemented */
+    /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_timer_init() not implemented\n");
     return false;
     
@@ -337,6 +346,9 @@ static bool test_oal_timer_add_del_basic(void)
         .trigger_count = 0,
         .magic = 0x4F414C54
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_timer;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_add_timer()/oal_del_timer() not implemented\n");
@@ -436,6 +448,9 @@ static bool test_oal_delay_msleep_basic(void)
         .max_delay_ms = 0,
         .magic = 0x4F414C44  /* "OALD" */
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)delay_ctx;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_msleep() not implemented\n");

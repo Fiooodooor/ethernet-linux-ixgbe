@@ -5,7 +5,7 @@
  * TDD tests for OAL register access and I/O operation seams
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /* These includes will FAIL until OAL register header is implemented */
 /* #include "../../oal/oal_register.h" */
@@ -173,6 +174,11 @@ static bool test_oal_reg_write32_basic(void)
     
     uint32_t test_value = 0x12345678;
     uint32_t read_back = 0;
+
+    /* Suppress unused variable warnings for TDD */
+    (void)mock_ctx;
+    (void)test_value;
+    (void)read_back;
     
     /* This call should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_reg_write32() not implemented\n");

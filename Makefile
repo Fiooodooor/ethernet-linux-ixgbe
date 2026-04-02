@@ -54,7 +54,7 @@ TEST_EXECUTABLES := \
     $(BUILD_DIR)/test_ixgbe_lifecycle_tdd \
     $(BUILD_DIR)/oal_master_tdd_runner
 
-# Object files
+# Object files (compiled with *_TDD_TEST_MAIN for standalone executables)
 MEMORY_OBJ := $(BUILD_DIR)/test_oal_memory_tdd.o
 REGISTER_OBJ := $(BUILD_DIR)/test_oal_register_tdd.o
 NETDEV_OBJ := $(BUILD_DIR)/test_oal_netdev_tdd.o
@@ -64,6 +64,16 @@ TIME_OBJ := $(BUILD_DIR)/test_oal_time_tdd.o
 HW_FEATURES_OBJ := $(BUILD_DIR)/test_ixgbe_hw_features_tdd.o
 LIFECYCLE_OBJ := $(BUILD_DIR)/test_ixgbe_lifecycle_tdd.o
 MASTER_OBJ := $(BUILD_DIR)/oal_master_tdd_runner.o
+
+# Library object files (compiled WITHOUT *_TDD_TEST_MAIN to avoid multiple main() definitions)
+MEMORY_LIB_OBJ := $(BUILD_DIR)/test_oal_memory_tdd_lib.o
+REGISTER_LIB_OBJ := $(BUILD_DIR)/test_oal_register_tdd_lib.o
+NETDEV_LIB_OBJ := $(BUILD_DIR)/test_oal_netdev_tdd_lib.o
+INTERRUPT_LIB_OBJ := $(BUILD_DIR)/test_oal_interrupt_tdd_lib.o
+SYNC_LIB_OBJ := $(BUILD_DIR)/test_oal_sync_tdd_lib.o
+TIME_LIB_OBJ := $(BUILD_DIR)/test_oal_time_tdd_lib.o
+HW_FEATURES_LIB_OBJ := $(BUILD_DIR)/test_ixgbe_hw_features_tdd_lib.o
+LIFECYCLE_LIB_OBJ := $(BUILD_DIR)/test_ixgbe_lifecycle_tdd_lib.o
 
 # Default target
 .PHONY: all
@@ -152,12 +162,12 @@ $(BUILD_DIR)/test_ixgbe_lifecycle_tdd: $(LIFECYCLE_OBJ)
 	$(CC) -o $@ $< $(LDFLAGS)
 	@echo "✓ Built: $@"
 
-$(BUILD_DIR)/oal_master_tdd_runner: $(MASTER_OBJ) $(MEMORY_OBJ) $(REGISTER_OBJ) $(NETDEV_OBJ) $(INTERRUPT_OBJ) $(SYNC_OBJ) $(TIME_OBJ) $(HW_FEATURES_OBJ) $(LIFECYCLE_OBJ)
+$(BUILD_DIR)/oal_master_tdd_runner: $(MASTER_OBJ) $(MEMORY_LIB_OBJ) $(REGISTER_LIB_OBJ) $(NETDEV_LIB_OBJ) $(INTERRUPT_LIB_OBJ) $(SYNC_LIB_OBJ) $(TIME_LIB_OBJ) $(HW_FEATURES_LIB_OBJ) $(LIFECYCLE_LIB_OBJ)
 	@echo "Linking master TDD test runner..."
 	$(CC) -o $@ $^ $(LDFLAGS)
 	@echo "✓ Built: $@"
 
-# Object file compilation
+# Object file compilation (with *_TDD_TEST_MAIN for standalone executables)
 $(BUILD_DIR)/test_oal_memory_tdd.o: $(TEST_DIR)/test_oal_memory_tdd.c
 	@echo "Compiling memory TDD tests..."
 	$(CC) $(CFLAGS) $(INCLUDES) -DOAL_MEMORY_TDD_TEST_MAIN -c -o $@ $<
@@ -192,6 +202,39 @@ $(BUILD_DIR)/test_ixgbe_lifecycle_tdd.o: $(TEST_DIR)/test_ixgbe_lifecycle_tdd.c
 
 $(BUILD_DIR)/oal_master_tdd_runner.o: $(TEST_DIR)/oal_master_tdd_runner.c
 	@echo "Compiling master TDD runner..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+# Library object file compilation (WITHOUT *_TDD_TEST_MAIN to avoid multiple main() when linking master runner)
+$(BUILD_DIR)/test_oal_memory_tdd_lib.o: $(TEST_DIR)/test_oal_memory_tdd.c
+	@echo "Compiling memory TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_oal_register_tdd_lib.o: $(TEST_DIR)/test_oal_register_tdd.c
+	@echo "Compiling register TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_oal_netdev_tdd_lib.o: $(TEST_DIR)/test_oal_netdev_tdd.c
+	@echo "Compiling netdev TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_oal_interrupt_tdd_lib.o: $(TEST_DIR)/test_oal_interrupt_tdd.c
+	@echo "Compiling interrupt TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_oal_sync_tdd_lib.o: $(TEST_DIR)/test_oal_sync_tdd.c
+	@echo "Compiling synchronization TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_oal_time_tdd_lib.o: $(TEST_DIR)/test_oal_time_tdd.c
+	@echo "Compiling time TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_ixgbe_hw_features_tdd_lib.o: $(TEST_DIR)/test_ixgbe_hw_features_tdd.c
+	@echo "Compiling IXGBE hardware features TDD tests (lib)..."
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+$(BUILD_DIR)/test_ixgbe_lifecycle_tdd_lib.o: $(TEST_DIR)/test_ixgbe_lifecycle_tdd.c
+	@echo "Compiling IXGBE lifecycle TDD tests (lib)..."
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 # Test execution targets
@@ -264,7 +307,7 @@ validate: all
 	@echo "VALIDATING TDD TEST FRAMEWORK"
 	@echo "=============================================================================="
 	@echo "1. Checking for framework contamination..."
-	@if grep -r "iflib\|linuxkpi\|rte_\|DPDK" $(TEST_DIR)/*.c; then \
+	@if grep -rEn "(\biflib_[a-z]|\blinuxkpi_[a-z]|\brte_[a-z]|\bdpdk_[a-z])" $(TEST_DIR)/*.c; then \
 		echo "❌ FRAMEWORK CONTAMINATION DETECTED!"; \
 		echo "Found forbidden framework calls in test code."; \
 		exit 1; \
@@ -328,7 +371,7 @@ package: all docs
 	@echo "Creating TDD test package..."
 	@mkdir -p $(BUILD_DIR)/package
 	@tar czf $(BUILD_DIR)/package/$(PROJECT_NAME)-$(VERSION)-$(PLATFORM).tar.gz \
-		$(BUILD_DIR)/*.exe $(BUILD_DIR)/docs \
+		$(TEST_EXECUTABLES) $(BUILD_DIR)/docs \
 		$(TEST_DIR)/*.c Makefile README.md
 	@echo "Package created: $(BUILD_DIR)/package/$(PROJECT_NAME)-$(VERSION)-$(PLATFORM).tar.gz"
 

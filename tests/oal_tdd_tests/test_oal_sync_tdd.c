@@ -5,7 +5,7 @@
  * TDD tests for OAL synchronization primitive abstraction seams
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <pthread.h>
 
 /* These includes will FAIL until OAL lock header is implemented */
@@ -200,6 +201,9 @@ static bool test_oal_spinlock_lock_unlock_basic(void)
         .unlock_count = 0,
         .magic = 0x4F414C4C
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_lock;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_spin_lock()/oal_spin_unlock() not implemented\n");
@@ -296,6 +300,9 @@ static bool test_oal_mutex_init_basic(void)
         .contention_count = 0,
         .magic = 0x4F414C4D  /* "OALM" */
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_mutex;
     
     /* This call should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_mutex_init() not implemented\n");
@@ -375,6 +382,11 @@ static bool test_oal_atomic_basic_operations(void)
     
     int32_t read_value = 0;
     int32_t new_value = TEST_ATOMIC_INITIAL_VALUE + TEST_ATOMIC_INCREMENT;
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_atomic;
+    (void)read_value;
+    (void)new_value;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_atomic_read()/oal_atomic_set() not implemented\n");
@@ -498,6 +510,9 @@ static bool test_oal_rwlock_init_basic(void)
         .write_lock_count = 0,
         .magic = 0x4F414C52  /* "OALR" */
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_rwlock;
     
     /* This call should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_rwlock_init() not implemented\n");

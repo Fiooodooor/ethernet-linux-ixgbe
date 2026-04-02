@@ -5,7 +5,7 @@
  * TDD tests for OAL interrupt management and MSI-X abstraction seams
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /* These includes will FAIL until OAL interrupt header is implemented */
 /* #include "../../oal/oal_interrupt.h" */
@@ -96,6 +97,7 @@ static int test_interrupt_handler(void *data)
     return OAL_IRQ_NONE;
 }
 
+static int test_msix_handler(void *data) __attribute__((unused));
 static int test_msix_handler(void *data)
 {
     struct mock_oal_msix_vector *vector = (struct mock_oal_msix_vector *)data;
@@ -286,6 +288,11 @@ static bool test_oal_msix_allocation_basic(void)
     
     uint32_t requested_vectors = 8;  /* Request 8 MSI-X vectors */
     uint32_t allocated_vectors = 0;
+
+    /* Suppress unused variable warnings for TDD */
+    (void)dev_irqs;
+    (void)requested_vectors;
+    (void)allocated_vectors;
     
     /* This call should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_pci_alloc_msix() not implemented\n");
@@ -405,6 +412,9 @@ static bool test_oal_msix_vector_assignment(void)
         .enabled = false,
         .cpu_affinity = 0
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)test_vector;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_msix_setup_vector() not implemented\n");
@@ -500,6 +510,9 @@ static bool test_oal_interrupt_disable_enable(void)
         .enabled = true,
         .magic = 0x4F414C49
     };
+
+    /* Suppress unused variable warnings for TDD */
+    (void)irq_ctx;
     
     /* This should FAIL until implemented */
     printf("TDD EXPECTED FAILURE: oal_disable_irq/oal_enable_irq() not implemented\n");

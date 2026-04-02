@@ -5,7 +5,7 @@
  * Master test runner for all OAL (Operating System Abstraction Layer) TDD tests
  * 
  * NON-NEGOTIABLE RULES VALIDATED:
- * - Zero framework calls (no iflib/linuxkpi/rte_*/DPDK usage)
+ * - Zero framework calls (no iflib/linuxkpi/rte_*, DPDK usage)
  * - Native OS API calls ONLY  
  * - Thin OAL seams: #ifdef trees, inline wrappers, weak symbols
  * - TDD-first: write failing test, then implement, then verify
@@ -420,5 +420,11 @@ int main(int argc, char *argv[])
  */
 int run_all_oal_tdd_tests(void)
 {
-    return main(0, NULL);
+    char *argv[2];
+
+    /* Provide a valid argv when calling main to avoid undefined behavior */
+    argv[0] = (char *)"oal_master_tdd_runner";
+    argv[1] = NULL;
+
+    return main(1, argv);
 }
