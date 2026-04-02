@@ -14,6 +14,10 @@
 #include <sys/firmware.h>
 #include <sys/reboot.h>
 
+/* Forward declaration for DMA map callback */
+static void ixgbe_dma_map_addr(void *arg, bus_dma_segment_t *segs, int nseg,
+    int error);
+
 /*
  * ===== ADVANCED INTERRUPT HANDLING IMPLEMENTATION =====
  */
@@ -23,20 +27,32 @@ ixgbe_pci_enable_msix(device_t dev, struct ixgbe_msix_entry *entries, int count)
 {
     int actual_count;
     int error;
-    
+
+    if (dev == NULL || entries == NULL || count <= 0)
+        return EINVAL;
+
     /* Allocate MSI-X vectors */
     actual_count = count;
     error = pci_alloc_msix(dev, &actual_count);
     if (error != 0)
         return error;
-        
+
+    if (actual_count != count) {
+        /*
+         * Fewer vectors allocated than requested; release the allocation
+         * before reporting the error so we don't leak MSI-X resources.
+         */
+        pci_release_msi(dev);
+        return ENOSPC;
+    }
+
     /* Fill in the vector assignments */
     for (int i = 0; i < actual_count; i++) {
         entries[i].vector = i + 1;  /* MSI-X vectors start at 1 */
         entries[i].entry = i;
     }
-    
-    return (actual_count == count) ? 0 : ENOSPC;
+
+    return 0;
 }
 
 void
@@ -95,6 +111,9 @@ int
 ixgbe_dma_tag_create(struct ixgbe_adapter *adapter, bus_dma_tag_t *tag,
                     bus_size_t maxsize, int nsegments, bus_size_t maxsegsize)
 {
+    if (adapter == NULL || adapter->dev == NULL || tag == NULL)
+        return EINVAL;
+
     return bus_dma_tag_create(
         bus_get_dma_tag(adapter->dev),  /* parent */
         1,                              /* alignment */
@@ -115,7 +134,10 @@ ixgbe_dma_mem_alloc(struct ixgbe_adapter *adapter, struct ixgbe_dma_mem *mem,
                    bus_size_t size, bus_size_t alignment)
 {
     int error;
-    
+
+    if (adapter == NULL || adapter->dev == NULL || mem == NULL)
+        return EINVAL;
+
     /* Create DMA tag */
     error = bus_dma_tag_create(
         bus_get_dma_tag(adapter->dev),  /* parent */
@@ -255,6 +277,9 @@ ixgbe_cancel_delayed_work_sync(struct ixgbe_delayed_work *dwork)
 int
 ixgbe_pci_set_power_state(device_t dev, pci_power_t state)
 {
+    if (dev == NULL)
+        return ENODEV;
+
     /* FreeBSD power management through PCI subsystem */
     switch (state) {
     case PCI_D0:
@@ -273,8 +298,13 @@ ixgbe_pci_set_power_state(device_t dev, pci_power_t state)
 pci_power_t
 ixgbe_pci_get_power_state(device_t dev)
 {
-    int state = pci_get_powerstate(dev);
-    
+    int state;
+
+    if (dev == NULL)
+        return PCI_D0;
+
+    state = pci_get_powerstate(dev);
+
     switch (state) {
     case PCI_POWERSTATE_D0:  return PCI_D0;
     case PCI_POWERSTATE_D1:  return PCI_D1;
@@ -290,7 +320,10 @@ ixgbe_pci_enable_wake(device_t dev, pci_power_t state, bool enable)
     /* Simplified wake-on-LAN support */
     uint16_t pmcsr;
     int pmreg;
-    
+
+    if (dev == NULL)
+        return ENODEV;
+
     if (pci_find_cap(dev, PCIY_PMG, &pmreg) != 0)
         return ENODEV;
         
@@ -548,7 +581,9 @@ ixgbe_request_firmware(const char *name, device_t dev)
     
     fw = firmware_get(name);
     if (fw == NULL) {
-        device_printf(dev, "Failed to load firmware '%s'\n", name);
+        if (dev != NULL) {
+            device_printf(dev, "Failed to load firmware '%s'\n", name);
+        }
     }
     
     return fw;

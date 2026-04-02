@@ -5,7 +5,7 @@
 
 # FreeBSD kernel build environment
 KMOD = ixgbe_test
-SRCS = api_mapping_test.c ixgbe_oal.c
+SRCS = api_mapping_test.c advanced_api_test.c ixgbe_oal.c ixgbe_advanced_oal.c
 
 # Test framework flags
 CFLAGS += -DDEBUG -DTESTING

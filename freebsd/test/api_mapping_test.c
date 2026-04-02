@@ -130,9 +130,9 @@ static int test_spinlock_operations(void)
     
     ixgbe_spin_lock_init(&slock);
     
-    ixgbe_spin_lock_irqsave(&slock, flags);
+    ixgbe_spin_lock_irqsave(&slock, &flags);
     /* Critical section */
-    ixgbe_spin_unlock_irqrestore(&slock, flags);
+    ixgbe_spin_unlock_irqrestore(&slock, &flags);
     
     TEST_PASS();
 }
@@ -199,13 +199,12 @@ static int test_byte_order(void)
 /* Test PCI configuration space access */
 static int test_pci_config_access(void)
 {
-    /* Mock hardware structure */
-    struct ixgbe_hw hw;
+    struct ixgbe_hw *hw = NULL;
     uint16_t vendor_id;
     
     /* This test requires actual hardware or mock setup */
     /* For now, test the API exists */
-    vendor_id = ixgbe_read_pci_cfg_word(&hw, 0);  /* PCI_VENDOR_ID */
+    vendor_id = ixgbe_read_pci_cfg_word(hw, 0);  /* PCI_VENDOR_ID */
     
     /* Should be able to call without crashing */
     TEST_PASS();

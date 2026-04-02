@@ -126,20 +126,23 @@ ixgbe_free(void *hw_unused, void *ptr)
         free(ptr, M_DEVBUF);
 }
 
-/* Linux vmalloc/vfree -> FreeBSD contigmalloc/contigfree */
+/* Linux vmalloc/vfree -> FreeBSD tracked alloc/free wrappers */
+/* These functions track allocation sizes to pass the correct size to contigfree.
+ * Implementations are in ixgbe_oal.c. */
+void *ixgbe_vmalloc_tracked(size_t size);
+void ixgbe_vfree_tracked(void *ptr);
+
 static inline void *
 ixgbe_vmalloc(size_t size)
 {
-    return contigmalloc(size, M_DEVBUF, M_NOWAIT, 0, ~0, 1, 0);
+    return ixgbe_vmalloc_tracked(size);
 }
 
 static inline void
 ixgbe_vfree(void *ptr)
 {
-    if (ptr) {
-        /* Note: Would need to track size for contigfree in real implementation */
-        contigfree(ptr, 0, M_DEVBUF);  /* Size tracking needed */
-    }
+    if (ptr)
+        ixgbe_vfree_tracked(ptr);
 }
 
 /*
@@ -420,11 +423,11 @@ enum {
  * ===== UNREFERENCED PARAMETER MACROS =====
  */
 
-#define UNREFERENCED_XPARAMETER
-#define UNREFERENCED_1PARAMETER(p)      __unused p
-#define UNREFERENCED_2PARAMETER(p, q)   __unused p; __unused q
-#define UNREFERENCED_3PARAMETER(p, q, r) __unused p; __unused q; __unused r
-#define UNREFERENCED_4PARAMETER(p, q, r, s) __unused p; __unused q; __unused r; __unused s
+#define UNREFERENCED_XPARAMETER                 do { } while (0)
+#define UNREFERENCED_1PARAMETER(p)              do { (void)(p); } while (0)
+#define UNREFERENCED_2PARAMETER(p, q)           do { (void)(p); (void)(q); } while (0)
+#define UNREFERENCED_3PARAMETER(p, q, r)        do { (void)(p); (void)(q); (void)(r); } while (0)
+#define UNREFERENCED_4PARAMETER(p, q, r, s)     do { (void)(p); (void)(q); (void)(r); (void)(s); } while (0)
 
 /*
  * ===== WORKQUEUE/TASKQUEUE MAPPING =====

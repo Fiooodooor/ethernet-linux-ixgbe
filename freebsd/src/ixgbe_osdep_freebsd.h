@@ -247,12 +247,10 @@ enum {
 
 /*
  * ===== MEMORY ALLOCATION =====
+ *
+ * Memory allocation helpers are provided by ixgbe_oal.h.
+ * Use the OAL-provided ixgbe_malloc/ixgbe_calloc/ixgbe_free directly.
  */
-
-/* Use OAL memory functions */
-#define ixgbe_malloc(hw, size)     ixgbe_malloc(hw, size)
-#define ixgbe_calloc(hw, cnt, sz)  ixgbe_calloc(hw, cnt, sz)  
-#define ixgbe_free(hw, ptr)        ixgbe_free(hw, ptr)
 
 /*
  * ===== SYNCHRONIZATION =====
@@ -260,11 +258,6 @@ enum {
 
 /* Use OAL lock functions */
 typedef ixgbe_lock mutex;
-#define ixgbe_lock                 ixgbe_lock
-#define ixgbe_init_lock(lock)      ixgbe_init_lock(lock)
-#define ixgbe_destroy_lock(lock)   ixgbe_destroy_lock(lock)
-#define ixgbe_acquire_lock(lock)   ixgbe_acquire_lock(lock)
-#define ixgbe_release_lock(lock)   ixgbe_release_lock(lock)
 
 /*
  * ===== UNREFERENCED PARAMETERS =====

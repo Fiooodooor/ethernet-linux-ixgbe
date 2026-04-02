@@ -16,6 +16,7 @@
 #include <sys/priv.h>
 #include <sys/proc.h>
 #include <sys/kthread.h>
+#include <sys/rwlock.h>
 #include <sys/smp.h>
 #include <sys/cpuset.h>
 #include <sys/eventhandler.h>
@@ -186,10 +187,10 @@ extern void ixgbe_free_pages(void *addr, size_t order);
 #define alloc_pages(flags, order)     ixgbe_alloc_pages(order, flags)
 #define __free_pages(page, order)     ixgbe_free_pages(page, order) 
 
-/* Memory barriers */
-#define mb()                      wmb()   /* Full memory barrier */
-#define rmb()                     rmb()   /* Read memory barrier */
-#define wmb()                     wmb()   /* Write memory barrier */
+/* Memory barriers - map to FreeBSD atomic primitives */
+#define mb()                      atomic_thread_fence_seq_cst()  /* Full memory barrier */
+#define rmb()                     atomic_thread_fence_acq()      /* Read memory barrier */
+#define wmb()                     atomic_thread_fence_rel()      /* Write memory barrier */
 #define smp_mb()                  mb()    /* SMP memory barrier */
 #define smp_rmb()                 rmb()   /* SMP read barrier */
 #define smp_wmb()                 wmb()   /* SMP write barrier */
@@ -339,6 +340,7 @@ extern int ixgbe_sysctl_setup(struct ixgbe_adapter *adapter);
 extern void ixgbe_sysctl_teardown(struct ixgbe_adapter *adapter);
 
 /* Module parameters simulation */
+SYSCTL_DECL(_hw_ixgbe);
 #define module_param(name, type, perm) \
     extern type ixgbe_##name; \
     SYSCTL_INT(_hw_ixgbe, OID_AUTO, name, CTLFLAG_RDTUN, &ixgbe_##name, 0, #name)
